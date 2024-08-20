@@ -35,6 +35,7 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = list(env("ALLOWED_HOSTS").split(','))
 
+HOST = env("HOST")
 
 # Application definition
 
@@ -49,11 +50,14 @@ DJANGO_APPS = [
 
 LOCAL_APPS = [
     'common',
-    'company'
+    'company',
+    'product'
 ]
 
 THIRD_PARTY_APPS = [
     "phonenumber_field",
+    'rest_framework',
+    'drf_yasg',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -153,3 +157,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/day',
+        'user': '5/day'
+    },
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+}
