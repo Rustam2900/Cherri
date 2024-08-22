@@ -26,6 +26,6 @@ class AboutUsHomeSerializer(serializers.ModelSerializer):
         fields = ('desc', 'galleries')
 
     def get_galleries(self, obj):
-        return AboutUsGallerySerializer(obj.galleries.order_by('?')[:6], many=True, context=self.context).data
+        return AboutUsGallerySerializer(obj.galleries.all().order_by('?')[:6], many=True, context=self.context).data
 
 

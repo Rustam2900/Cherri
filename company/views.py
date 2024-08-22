@@ -14,7 +14,7 @@ class BannerListView(APIView):
     def get(self, request, *args, **kwargs):
         banners = Banner.objects.all()
         if not banners.exists():
-            return Response({'error': 'No banners found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'No banners found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = BannerListSerializer(banners, many=True, context={'request': request})
         return Response(data=serializer.data)
 

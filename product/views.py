@@ -20,4 +20,4 @@ class WebOrderCreateView(generics.CreateAPIView):
 class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
-
+    pagination_class = None
