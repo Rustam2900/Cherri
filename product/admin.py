@@ -10,3 +10,7 @@ class ProductAttributeInline(admin.StackedInline):
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductAttributeInline]
     list_display = ('title', 'desc', 'size')
+
+@admin.register(Discount)
+class DiscountAdmin(admin.ModelAdmin):
+    pass

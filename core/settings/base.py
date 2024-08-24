@@ -51,8 +51,12 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     'common',
     'company',
-    'product'
+    'product',
+    'account',
+    'order'
 ]
+
+AUTH_USER_MODEL = 'account.User'
 
 THIRD_PARTY_APPS = [
     "phonenumber_field",
