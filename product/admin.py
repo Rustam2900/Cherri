@@ -11,6 +11,6 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductAttributeInline]
     list_display = ('title', 'desc', 'size')
 
-@admin.register(Discount)
-class DiscountAdmin(admin.ModelAdmin):
+@admin.register(Action)
+class ActionAdmin(admin.ModelAdmin):
     pass
