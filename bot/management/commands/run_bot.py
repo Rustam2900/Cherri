@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 import telebot
-from bot.keyboards import get_languages, user_types, registration
+from bot.keyboards import get_languages, user_types, get_registration
 from bot.utils import default_languages, introduction_template
 from bot.states import LegalRegisterState, IndividualRegisterState
 BOT_TOKEN = settings.BOT_TOKEN
@@ -25,6 +25,13 @@ def welcome(message):
     bot.send_message(chat_id=message.chat.id, text=text, reply_markup=get_languages())
 
 
+@bot.callback_query_handler(func=lambda call: call.data == 'registration')
+def registration(call):
+    lang = user_languages[call.from_user.id]
+    text = "Foydalanuvchi turini tanlang"
+    bot.send_message(chat_id=call.from_user.id, text=text, reply_markup=user_types(lang))
+
+
 @bot.callback_query_handler(func=lambda call: call.data.split("_")[0] == 'lang')
 def select_language(call):
     print("call back data", call)
@@ -33,16 +40,10 @@ def select_language(call):
     lang = call.data.split("_")[1]
     if lang in all_languages:
         user_languages[user_id] = call.data.split("_")[1]
-        bot.send_message(chat_id=call.from_user.id, text=introduction_template, reply_markup=registration(lang))
+        bot.send_message(chat_id=call.from_user.id, text=introduction_template, reply_markup=get_registration(lang))
     else:
         bot.send_message(chat_id=user_id, text="You are not choose right language")
 
-
-@bot.callback_query_handler(func=lambda call: call['data'] == "registration")
-def registration(call):
-    lang = user_languages[call.from_user.id]
-    text = "Foydalanuvchi turini tanlang"
-    bot.send_message(chat_id=call.from_user.id, text=text, reply_markup=user_types(lang))
 
 
 
