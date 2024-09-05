@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+from distutils.command.config import config
+
 import environ
 from pathlib import Path
 from core.jwt_settings import SIMPLE_JWT
@@ -55,7 +57,8 @@ LOCAL_APPS = [
     'company',
     'product',
     'account',
-    'order'
+    'order',
+    'bot'
 ]
 
 AUTH_USER_MODEL = 'account.User'
@@ -196,3 +199,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = SIMPLE_JWT
+
+BOT_TOKEN = env.str('BOT_TOKEN')
+
+
