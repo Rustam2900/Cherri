@@ -28,7 +28,7 @@ def get_registration(lang):
 
 def get_contact(lang):
     btn_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    btn = KeyboardButton(text="Kontaktni yuborish")
+    btn = KeyboardButton(text="Kontaktni yuborish", request_contact=True)
     btn_markup.add(btn)
     return btn_markup
 

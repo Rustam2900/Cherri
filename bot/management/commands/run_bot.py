@@ -62,25 +62,27 @@ def check_registration(call):
 
 @bot.message_handler(func=lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.NAME)
 def individual_name(message):
-    print("message", message)
+
     lang = user_languages[message.from_user.id]
     data = {
         "full_name": message.text
     }
 
-    bot.add_data(user_id=message.chat.id, data=data)
-    bot.set_state(user_id=message.chat.id, state=IndividualRegisterState.CONTACT)
+    bot.add_data(user_id=message.chat.id,  **data)
+    bot.set_state(user_id=message.from_user.id, state=IndividualRegisterState.CONTACT)
     bot.send_message(chat_id=message.chat.id, text="Kontaktingizni kiriting", reply_markup=get_contact(lang))
 
 
 
-@bot.message_handler(func=lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.CONTACT)
+@bot.message_handler(content_types=["contact"], func=lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.CONTACT)
 def individual_contact(message):
     lang = user_languages[message.from_user.id]
+    print(message.contact.phone_number)
     with bot.retrieve_data(user_id=message.chat.id) as data:
-        data['phone_number'] = message.contact.text
-        data['telegram_id'] = message.from_user.id
-        data['username'] = message.from_user.username
+        pass
+    data['phone_number'] = message.contact.phone_number
+    data['telegram_id'] = message.from_user.id
+    data['username'] = message.from_user.username
 
     user = create_user(data, 'individual')
     bot.send_message(chat_id=message.from_user.id, text="Siz muvaffaqqiyatli ro'yhatdan o'tdingiz", reply_markup=get_main_menu(lang))
@@ -93,7 +95,7 @@ def legal_company_name(message):
     data = {
         "company_name": message
     }
-    bot.add_data(user_id=message.chat.id, data=data)
+    bot.add_data(user_id=message.chat.id, **data)
     bot.set_state(user_id=message.chat.id, state=LegalRegisterState.EMPLOYEE_NAME)
     bot.send_message(chat_id=message.from_user.id, text="Xodim ismini kiriting")
 
@@ -103,6 +105,7 @@ def legal_employee_name(message):
     lang = user_languages[message.from_user.id]
     with bot.retrieve_data(user_id=message.chat.id) as data:
         data['employee_name'] = message
+    bot.add_data(user_id=message.chat.id, **data)
 
     bot.set_state(user_id=message.chat.id, state=LegalRegisterState.COMPANY_CONTACT)
     bot.send_message(chat_id=message.chat.id, text="Kontaktingizni kiriting", reply_markup=get_contact(lang))
