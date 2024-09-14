@@ -1,11 +1,12 @@
 from django.contrib.auth import authenticate
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
 from account.models import User
-from .serializers import UserRegisterSerializer, UserLoginRequestSerializer
+from .serializers import UserRegisterSerializer, UserLoginRequestSerializer, UserProfileSerializer
 
 class UserRegisterView(CreateAPIView):
     queryset = User.objects.all()
@@ -29,3 +30,14 @@ class UserLoginView(CreateAPIView):
             return Response(data={"User not found"})
         except User.DoesNotExist:
             return Response(data={"User not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class UserProfileAPIView(RetrieveUpdateAPIView):
+    throttle_classes = []
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserProfileSerializer
+
+    def get_object(self):
+        return self.request.user

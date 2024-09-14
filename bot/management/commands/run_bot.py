@@ -16,6 +16,7 @@ user_languages = {}
 
 all_languages = ['uz', 'ru']
 
+
 @bot.message_handler(commands=['start'])
 def welcome(message):
     lang_uz = default_languages['uz']
@@ -25,9 +26,9 @@ def welcome(message):
             f"{lang_ru['welcome_message']}\n"
             f"{lang_ru['choose_language']}\n")
 
-
     bot.send_message(chat_id=message.chat.id, text=text, reply_markup=get_languages())
     bot.send_message(chat_id=message.chat.id, text="Tilni tanlang", reply_markup=ReplyKeyboardRemove())
+
 
 @bot.callback_query_handler(func=lambda call: call.data == 'registration')
 def registration(call):
@@ -38,7 +39,6 @@ def registration(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.split("_")[0] == 'lang')
 def select_language(call):
-
     user_id = call.from_user.id
 
     lang = call.data.split("_")[1]
@@ -55,8 +55,6 @@ def select_language(call):
         bot.send_message(chat_id=user_id, text="You are not choose right language")
 
 
-
-
 @bot.callback_query_handler(lambda call: call.data in ['legal', 'individual'])
 def check_registration(call):
     if call.data == 'legal':
@@ -67,22 +65,20 @@ def check_registration(call):
         bot.set_state(user_id=call.from_user.id, state=IndividualRegisterState.NAME)
 
 
-
 @bot.message_handler(func=lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.NAME)
 def individual_name(message):
-
     lang = user_languages[message.from_user.id]
     data = {
         "full_name": message.text
     }
 
-    bot.add_data(user_id=message.chat.id,  **data)
+    bot.add_data(user_id=message.chat.id, **data)
     bot.set_state(user_id=message.from_user.id, state=IndividualRegisterState.CONTACT)
     bot.send_message(chat_id=message.chat.id, text="Kontaktingizni kiriting", reply_markup=get_contact(lang))
 
 
-
-@bot.message_handler(content_types=["contact"], func=lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.CONTACT)
+@bot.message_handler(content_types=["contact"],
+                     func=lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.CONTACT)
 def individual_contact(message):
     lang = user_languages[message.from_user.id]
 
@@ -94,7 +90,7 @@ def individual_contact(message):
     bot.send_message(chat_id=message.chat.id, text="Akkountingiz uchun parol kiriting")
 
 
-@bot.message_handler(func = lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.PASSWORD)
+@bot.message_handler(func=lambda message: bot.get_state(message.from_user.id) == IndividualRegisterState.PASSWORD)
 def individual_password(message):
     lang = user_languages[message.from_user.id]
     with bot.retrieve_data(user_id=message.chat.id) as data:
@@ -104,8 +100,8 @@ def individual_password(message):
     data['username'] = message.from_user.username
 
     user = create_user(data, 'individual')
-    bot.send_message(chat_id=message.from_user.id, text="Siz muvaffaqqiyatli ro'yhatdan o'tdingiz", reply_markup=get_main_menu(lang))
-
+    bot.send_message(chat_id=message.from_user.id, text="Siz muvaffaqqiyatli ro'yhatdan o'tdingiz",
+                     reply_markup=get_main_menu(lang))
 
 
 @bot.message_handler(func=lambda message: bot.get_state(message.from_user.id) == LegalRegisterState.COMPANY_NAME)
@@ -130,7 +126,8 @@ def legal_employee_name(message):
     bot.send_message(chat_id=message.chat.id, text="Kontaktingizni kiriting", reply_markup=get_contact(lang))
 
 
-@bot.message_handler(content_types=["contact"], func=lambda message: bot.get_state(message.from_user.id) == LegalRegisterState.COMPANY_CONTACT)
+@bot.message_handler(content_types=["contact"],
+                     func=lambda message: bot.get_state(message.from_user.id) == LegalRegisterState.COMPANY_CONTACT)
 def legal_company_contact(message):
     lang = user_languages[message.from_user.id]
     with bot.retrieve_data(user_id=message.chat.id) as data:
@@ -167,13 +164,12 @@ def legal_working_day(message):
     with bot.retrieve_data(user_id=message.chat.id) as data:
         data['working_days'] = message.text
 
-
     bot.set_state(user_id=message.chat.id, state=LegalRegisterState.PASSWORD)
     bot.add_data(user_id=message.chat.id, **data)
     bot.send_message(chat_id=message.chat.id, text="Akkountingiz uchun parol kiriting")
 
 
-@bot.message_handler(func = lambda message: bot.get_state(message.from_user.id) == LegalRegisterState.PASSWORD)
+@bot.message_handler(func=lambda message: bot.get_state(message.from_user.id) == LegalRegisterState.PASSWORD)
 def legal_password(message):
     lang = user_languages[message.from_user.id]
     with bot.retrieve_data(user_id=message.chat.id) as data:
@@ -185,14 +181,24 @@ def legal_password(message):
 
     duration_days = data['duration_days']
     del data['duration_days']
-    total_water = calculate_total_water(data['working_days'], data['employees_count'], duration_days)
+    total_water = calculate_total_water(week_days=data['working_days'], employee_count=data['employees_count'],
+                                        durations_days=duration_days)
     text = (f"Xodim: {data['employees_count']}\n"
             f"Davomiylik kuni: {duration_days}\n"
-            f"Sizning ishchilaringiz uchun  {int(total_water)//20} ta 20 l suv\n"
+            f"Sizning ishchilaringiz uchun  {int(total_water) // 20} ta 20 l suv\n"
             )
-
+    bot.add_data(user_id=message.from_user.id, **data)
     user = create_user(data, 'legal')
     bot.send_message(chat_id=message.from_user.id, text=text, reply_markup=get_confirm_button(lang))
+
+
+@bot.message_handler(func=lambda message: message.text in ['Buyurtma berish'])
+def order_create(message):
+    lang = user_languages[message.from_user.id]
+    with bot.retrieve_data(user_id=message.chat.id) as data:
+
+
+
 
 class Command(BaseCommand):
 

@@ -48,5 +48,6 @@ introduction_template = (
 
 
 def calculate_total_water(week_days, employee_count, durations_days):
-    available_days = int(durations_days) // int(week_days) + int(durations_days) % int(week_days)
+
+    available_days = (int(durations_days) // 7) * int(week_days) + int(durations_days) % 7
     return available_days * int(employee_count) * 2

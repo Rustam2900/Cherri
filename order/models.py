@@ -20,6 +20,7 @@ class Order(models.Model):
     phone_number = PhoneNumberField(_('phone number'))
     number = models.CharField(_('order number'), max_length=20, unique=True, null=True, blank=True)
     total_price = models.FloatField(_('total price'), blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Order {self.id} by {self.user.full_name}"
@@ -58,3 +59,17 @@ class OrderMinSum(models.Model):
     class Meta:
         verbose_name = _('Order Minimum Sum')
         verbose_name_plural = _('Order Minimum Sums')
+
+
+class NotificationOrder(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name=_('order'),
+                              related_name='notification_orders')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('user'),
+                             related_name="notification_orders")
+    employee_count = models.PositiveIntegerField(_('employee count'), default=0)
+    durations_days = models.PositiveIntegerField(_('durations days'), default=0)
+    box_count = models.PositiveIntegerField(_('box count'), default=0)
+
+    def __str__(self):
+        return str(self.order.id) + str(self.employee_count)
+

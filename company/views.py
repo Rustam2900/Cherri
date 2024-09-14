@@ -2,13 +2,17 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import RetrieveAPIView
-
+from rest_framework.throttling import UserRateThrottle
+from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from .models import *
 from .serializers import *
 from company.models import Banner
-
-
+is_home = openapi.Parameter('is_home', openapi.IN_QUERY,
+                             description="field you want to order by to",
+                             type=openapi.TYPE_BOOLEAN)
 class BannerListView(APIView):
 
     def get(self, request, *args, **kwargs):
@@ -19,9 +23,27 @@ class BannerListView(APIView):
         return Response(data=serializer.data)
 
 
-class AboutUsHomeView(APIView):
+class AboutUsHomeView(ListAPIView):
+    queryset = AboutUs.objects.all()
+    serializer_class = AboutUsHomeSerializer
 
+    @swagger_auto_schema(manual_parameters=[is_home])
     def get(self, request, *args, **kwargs):
         about_us = AboutUs.objects.last()
-        serializer = AboutUsHomeSerializer(about_us, context={'request': request})
+        query = self.request.GET.get('is_home', None)
+        if query:
+            serializer = AboutUsHomeSerializer(about_us, context={'request': request})
+        else:
+            serializer = AboutUsSerializer(about_us, context={'request': request})
         return Response(data=serializer.data)
+
+
+class ContactWithUsView(CreateAPIView):
+    serializer_class = ContactWithUsSerializer
+    queryset = ContactWithUs.objects.all()
+    throttle_classes = [UserRateThrottle, ]
+
+
+class SocialMediaView(ListAPIView):
+    serializer_class = SocialMediaSerializer
+    queryset = SocialMedia.objects.all()

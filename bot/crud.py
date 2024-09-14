@@ -37,3 +37,5 @@ def create_user(user_data, user_type):
 def get_user_db(username):
     user = TelegramUser.objects.filter(telegram_username=username).first()
     return user
+
+

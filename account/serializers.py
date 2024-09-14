@@ -39,3 +39,11 @@ class UserLoginRequestSerializer(serializers.Serializer):
 class UserLoginResponseSerializer(serializers.Serializer):
     access = serializers.CharField(required=True)
     refresh = serializers.CharField(required=True)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'full_name', 'username', 'email', 'first_name', 'last_name', 'phone_number',
+            )

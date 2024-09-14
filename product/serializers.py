@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from common.serializers import MediaURLSerializer
-from .models import Product, WebOrder, ProductAttribute
+from .models import Product, WebOrder, ProductAttribute, Action
 
 
 class ProductHomeListSerializer(serializers.ModelSerializer):
@@ -32,3 +32,10 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'title', 'desc', 'attributes')
+
+
+
+class ActionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Action
+        fields = ("title", "desc", "image", "percentage")
