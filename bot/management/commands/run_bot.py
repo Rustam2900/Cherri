@@ -196,8 +196,7 @@ def legal_password(message):
 def order_create(message):
     lang = user_languages[message.from_user.id]
     with bot.retrieve_data(user_id=message.chat.id) as data:
-
-
+        pass
 
 
 class Command(BaseCommand):

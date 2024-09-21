@@ -3,8 +3,8 @@ from django.utils.translation import gettext_lazy as _
 from common.models import Media
 from common.utils import phone_number_validator
 
-
 from phonenumber_field.modelfields import PhoneNumberField
+
 
 class Banner(models.Model):
     title = models.CharField(_('title'), max_length=255)
@@ -18,10 +18,10 @@ class Banner(models.Model):
         verbose_name = _('banner')
         verbose_name_plural = _('banner')
 
+
 class AboutUs(models.Model):
     desc = models.TextField(_('description'))
     video = models.OneToOneField(Media, blank=True, null=True, on_delete=models.SET_NULL)
-
 
     def __str__(self):
         return f"{self.id}-{self.desc}"
@@ -46,7 +46,7 @@ class AboutUsGallery(models.Model):
 class Contacts(models.Model):
     address = models.TextField(_('address'))
     phone_number1 = models.CharField(_('phone number1'), max_length=20, validators=[phone_number_validator])
-    phone_number2 = PhoneNumberField(_('phone number2'))
+    phone_number2 = models.CharField(_('phone number2'), max_length=20, validators=[phone_number_validator])
     work_time = models.CharField(_('work time'), max_length=255)
 
     def __str__(self):
