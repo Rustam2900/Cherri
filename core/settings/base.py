@@ -65,7 +65,6 @@ LOCAL_APPS = [
 AUTH_USER_MODEL = 'account.User'
 
 THIRD_PARTY_APPS = [
-    "phonenumber_field",
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',

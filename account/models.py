@@ -1,8 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import AbstractUser
 from rest_framework_simplejwt.tokens import RefreshToken
+from common.utils import phone_number_validator
+
 
 
 class User(AbstractUser):
@@ -13,7 +14,7 @@ class User(AbstractUser):
     full_name = models.CharField(_('full name'), max_length=255)
     email = models.EmailField(_('email'))
     username = models.CharField(_('username'), max_length=255, unique=True)
-    phone_number = PhoneNumberField(_('phone_number'), unique=True)
+    phone_number = models.CharField(_('phone number'), max_length=20, validators=[phone_number_validator])
     password = models.CharField(_('password'), max_length=255)
     user_type = models.CharField(
         _('user type'),

@@ -3,7 +3,6 @@ from django.utils.translation import gettext_lazy as _
 from common.models import Media
 from common.utils import phone_number_validator
 
-from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Banner(models.Model):
@@ -71,7 +70,7 @@ class SocialMedia(models.Model):
 
 class ContactWithUs(models.Model):
     full_name = models.CharField(_('full name'), max_length=255)
-    phone_number = PhoneNumberField(_('phone number'))
+    phone_number = models.CharField(_('phone number'), max_length=20, validators=[phone_number_validator])
     subject = models.CharField(_('subject'), max_length=255)
     message = models.TextField(_('message'))
 
